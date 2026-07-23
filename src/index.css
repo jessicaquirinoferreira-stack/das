@@ -1,0 +1,151 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-mauve: #B87D7B;
+    --color-mauve-light: #E8D4D3;
+    --color-mauve-dark: #8F5553;
+    
+    --color-sage: #8B9E87;
+    --color-sage-light: #D2DCD0;
+    --color-sage-dark: #5B6D57;
+    
+    --color-gold: #C5A059;
+    --color-gold-light: #F0E2C3;
+    --color-gold-dark: #8E7032;
+    
+    --color-espresso: #2C221E;
+    --color-espresso-light: #4A3C37;
+    --color-cream: #F8F5F2;
+    --color-cream-card: #FFFFFF;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: var(--color-cream);
+    color: var(--color-espresso);
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: 'Cormorant Garamond', 'Playfair Display', serif;
+  }
+}
+
+/* Custom Utilities */
+.font-serif-luxury {
+  font-family: 'Cormorant Garamond', 'Playfair Display', serif;
+}
+
+.font-sans-clean {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Luxury Gradient Text & Borders */
+.gradient-dua-text {
+  background: linear-gradient(135deg, #B87D7B 0%, #C5A059 50%, #8B9E87 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-dua-bg {
+  background: linear-gradient(135deg, #B87D7B 0%, #C5A059 50%, #8B9E87 100%);
+}
+
+.gradient-dua-soft {
+  background: linear-gradient(135deg, rgba(184, 125, 123, 0.08) 0%, rgba(197, 160, 89, 0.08) 50%, rgba(139, 158, 135, 0.08) 100%);
+}
+
+.gradient-dua-border {
+  border-image: linear-gradient(135deg, #B87D7B, #C5A059, #8B9E87) 1;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F8F5F2;
+}
+::-webkit-scrollbar-thumb {
+  background: #C5A059;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #B87D7B;
+}
+
+/* Glassmorphic luxury panel */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(197, 160, 89, 0.18);
+}
+
+/* Luxury Keyframe Animations */
+@keyframes luxuryShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes goldPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.4;
+    filter: drop-shadow(0 0 15px rgba(197, 160, 89, 0.4));
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.8;
+    filter: drop-shadow(0 0 35px rgba(197, 160, 89, 0.8));
+  }
+}
+
+@keyframes floatParticle {
+  0% {
+    transform: translateY(0px) rotate(0deg) scale(0.8);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.8;
+  }
+  80% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-80px) rotate(180deg) scale(1.2);
+    opacity: 0;
+  }
+}
+
+@keyframes lightRaySweep {
+  0% {
+    transform: translateX(-100%) rotate(25deg);
+  }
+  100% {
+    transform: translateX(200%) rotate(25deg);
+  }
+}
+
+.animate-gold-pulse {
+  animation: goldPulse 3.5s ease-in-out infinite;
+}
+
+.animate-shimmer-text {
+  background: linear-gradient(90deg, #B87D7B 0%, #FFF 25%, #C5A059 50%, #FFF 75%, #B87D7B 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: luxuryShimmer 4s linear infinite;
+}
+
+.animate-light-ray {
+  animation: lightRaySweep 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+

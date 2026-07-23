@@ -1,0 +1,6 @@
+{
+  "name": "Dua Modas",
+  "description": "E-commerce luxuoso e moderno para Dua Modas - Moda que Conecta",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

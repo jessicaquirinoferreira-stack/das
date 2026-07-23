@@ -1,0 +1,86 @@
+{
+  "entities": {
+    "products": {
+      "title": "Products",
+      "description": "Store clothing products and catalog items",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "price": { "type": "number" },
+        "promotionalPrice": { "type": "number" },
+        "categories": { "type": "array", "items": { "type": "string" } },
+        "sizes": { "type": "array", "items": { "type": "string" } },
+        "colors": { "type": "array" },
+        "stock": { "type": "number" },
+        "images": { "type": "array", "items": { "type": "string" } },
+        "isFeatured": { "type": "boolean" },
+        "isNew": { "type": "boolean" },
+        "createdAt": { "type": "number" }
+      },
+      "required": ["name", "price", "categories", "stock"]
+    },
+    "categories": {
+      "title": "Categories",
+      "description": "Store categories",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "slug": { "type": "string" },
+        "image": { "type": "string" },
+        "description": { "type": "string" }
+      },
+      "required": ["name", "slug"]
+    },
+    "coupons": {
+      "title": "Coupons",
+      "description": "Discount promotional coupons",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "code": { "type": "string" },
+        "discountType": { "type": "string" },
+        "discountValue": { "type": "number" },
+        "expirationDate": { "type": "string" },
+        "usageType": { "type": "string" },
+        "minPurchase": { "type": "number" },
+        "active": { "type": "boolean" },
+        "usedCount": { "type": "number" }
+      },
+      "required": ["code", "discountType", "discountValue"]
+    },
+    "orders": {
+      "title": "Orders",
+      "description": "Customer e-commerce orders",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "orderNumber": { "type": "string" },
+        "customer": { "type": "object" },
+        "items": { "type": "array" },
+        "subtotal": { "type": "number" },
+        "discountAmount": { "type": "number" },
+        "shippingFee": { "type": "number" },
+        "total": { "type": "number" },
+        "paymentMethod": { "type": "string" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "number" }
+      },
+      "required": ["customer", "items", "total"]
+    },
+    "settings": {
+      "title": "Settings",
+      "description": "Global store configuration",
+      "type": "object",
+      "properties": {
+        "storeName": { "type": "string" },
+        "slogan": { "type": "string" },
+        "phone": { "type": "string" },
+        "whatsappNumber": { "type": "string" },
+        "email": { "type": "string" }
+      }
+    }
+  }
+}
