@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useStore } from '../../context/StoreContext';
-import { ShoppingBag, X, Trash2, ArrowRight, Tag, Truck } from 'lucide-react';
+import { ShoppingBag, X, Trash2, ArrowRight, Tag, Truck, Check } from 'lucide-react';
+import { calculateCorreiosShipping, ShippingOption } from '../../utils/shipping';
 
 export const CartDrawer: React.FC = () => {
   const { 
@@ -14,11 +15,22 @@ export const CartDrawer: React.FC = () => {
     applyCouponCode, 
     removeCoupon, 
     couponDiscount, 
+    shippingFee,
+    setShippingFee,
+    shippingMethodName,
+    setShippingMethodName,
     setCurrentView 
   } = useStore();
 
   const [couponInput, setCouponInput] = useState('');
   const [couponMsg, setCouponMsg] = useState('');
+
+  // Shipping State
+  const [cepInput, setCepInput] = useState('');
+  const [loadingShipping, setLoadingShipping] = useState(false);
+  const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
+  const [selectedMethodId, setSelectedMethodId] = useState<string>('pac');
+  const [shippingCityState, setShippingCityState] = useState<string>('');
 
   if (!isCartOpen) return null;
 
@@ -30,11 +42,47 @@ export const CartDrawer: React.FC = () => {
     if (res.success) setCouponInput('');
   };
 
+  const handleCalculateShipping = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const clean = cepInput.replace(/\D/g, '');
+    if (clean.length !== 8) return;
+
+    setLoadingShipping(true);
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${clean}/json/`);
+      const data = await res.json();
+      if (!data.erro) {
+        setShippingCityState(`${data.localidade} - ${data.uf}`);
+        const options = calculateCorreiosShipping(clean, data.uf, cartSubtotal);
+        setShippingOptions(options);
+
+        // Auto-select PAC or default
+        const defaultOpt = options.find((o) => o.id === selectedMethodId) || options[0];
+        if (defaultOpt) {
+          setShippingFee(defaultOpt.price);
+          setShippingMethodName(defaultOpt.name);
+        }
+      }
+    } catch (err) {
+      console.warn('CEP calculation error:', err);
+    } finally {
+      setLoadingShipping(false);
+    }
+  };
+
+  const handleSelectOption = (opt: ShippingOption) => {
+    setSelectedMethodId(opt.id);
+    setShippingFee(opt.price);
+    setShippingMethodName(opt.name);
+  };
+
   const handleProceedToCheckout = () => {
     setIsCartOpen(false);
     setCurrentView('checkout');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  const totalWithShipping = Math.max(0, cartSubtotal - couponDiscount + shippingFee);
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
@@ -141,9 +189,77 @@ export const CartDrawer: React.FC = () => {
             )}
           </div>
 
-          {/* Footer Subtotal & Coupon */}
+          {/* Footer Subtotal, Shipping & Coupon */}
           {cart.length > 0 && (
-            <div className="p-5 bg-[#F8F5F2] dark:bg-[#2C221E] border-t border-[#C5A059]/20 space-y-4">
+            <div className="p-5 bg-[#F8F5F2] dark:bg-[#2C221E] border-t border-[#C5A059]/20 space-y-4 max-h-[60vh] overflow-y-auto">
+              {/* Shipping Calculator */}
+              <div className="p-3 bg-white dark:bg-[#3A2E2B] rounded-2xl border border border-[#C5A059]/20 space-y-2">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-[#2C221E] dark:text-[#F8F5F2]">
+                  <Truck className="w-4 h-4 text-[#C5A059]" />
+                  <span>Calcular Frete Correios</span>
+                </div>
+
+                <form onSubmit={handleCalculateShipping} className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="00000-000"
+                    maxLength={9}
+                    value={cepInput}
+                    onChange={(e) => {
+                      setCepInput(e.target.value);
+                      const clean = e.target.value.replace(/\D/g, '');
+                      if (clean.length === 8) {
+                        handleCalculateShipping();
+                      }
+                    }}
+                    className="flex-1 px-3 py-1.5 text-xs bg-[#F8F5F2] dark:bg-[#2C221E] border border-stone-200 dark:border-stone-700 rounded-xl focus:outline-none"
+                  />
+                  <button
+                    type="submit"
+                    className="px-3 py-1.5 bg-[#8B9E87] hover:bg-[#72836e] text-white font-bold text-xs rounded-xl"
+                  >
+                    {loadingShipping ? '...' : 'Calcular'}
+                  </button>
+                </form>
+
+                {shippingCityState && (
+                  <p className="text-[10px] text-[#8B9E87] font-semibold">📍 {shippingCityState}</p>
+                )}
+
+                {shippingOptions.length > 0 && (
+                  <div className="space-y-1.5 pt-1">
+                    {shippingOptions.map((opt) => (
+                      <label
+                        key={opt.id}
+                        onClick={() => handleSelectOption(opt)}
+                        className={`flex items-center justify-between p-2 rounded-xl text-xs border cursor-pointer transition-all ${
+                          selectedMethodId === opt.id
+                            ? 'border-[#B87D7B] bg-[#B87D7B]/10 font-bold'
+                            : 'border-stone-200 dark:border-stone-700 hover:border-stone-300'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="radio"
+                            name="shippingMethodCart"
+                            checked={selectedMethodId === opt.id}
+                            onChange={() => handleSelectOption(opt)}
+                            className="text-[#B87D7B]"
+                          />
+                          <div>
+                            <span className="block text-xs">{opt.name}</span>
+                            <span className="block text-[10px] text-stone-400 font-normal">{opt.deliveryTime}</span>
+                          </div>
+                        </div>
+                        <span className="text-xs font-bold text-[#B87D7B]">
+                          {opt.isFree ? 'GRÁTIS' : `R$ ${opt.price.toFixed(2).replace('.', ',')}`}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               {/* Coupon Form */}
               <div>
                 {appliedCoupon ? (
@@ -188,14 +304,14 @@ export const CartDrawer: React.FC = () => {
                     <span>- R$ {couponDiscount.toFixed(2).replace('.', ',')}</span>
                   </div>
                 )}
-                <div className="flex justify-between text-stone-500">
-                  <span>Frete:</span>
-                  <span>Calculado no checkout</span>
+                <div className="flex justify-between text-stone-600 dark:text-stone-300">
+                  <span>Frete ({shippingMethodName}):</span>
+                  <span>{shippingFee === 0 ? 'GRÁTIS' : `R$ ${shippingFee.toFixed(2).replace('.', ',')}`}</span>
                 </div>
                 <div className="flex justify-between text-base font-bold text-[#2C221E] dark:text-[#F8F5F2] pt-2 border-t">
                   <span>Total estimado:</span>
                   <span className="text-[#B87D7B]">
-                    R$ {(cartSubtotal - couponDiscount).toFixed(2).replace('.', ',')}
+                    R$ {totalWithShipping.toFixed(2).replace('.', ',')}
                   </span>
                 </div>
               </div>
@@ -215,3 +331,4 @@ export const CartDrawer: React.FC = () => {
     </div>
   );
 };
+

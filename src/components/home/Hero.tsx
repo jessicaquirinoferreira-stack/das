@@ -1,6 +1,6 @@
 import React from 'react';
 import { useStore } from '../../context/StoreContext';
-import { Sparkles, ArrowRight, ShieldCheck, HeartHandshake } from 'lucide-react';
+import { Sparkles, ArrowRight, ShieldCheck, HeartHandshake, MapPin } from 'lucide-react';
 
 export const Hero: React.FC = () => {
   const { setCurrentView, selectCategory } = useStore();
@@ -66,31 +66,39 @@ export const Hero: React.FC = () => {
 
           {/* Right Composite Photography Stage (5 cols) */}
           <div className="lg:col-span-5 relative">
-            <div className="relative mx-auto max-w-md lg:max-w-none">
+            <div className="relative mx-auto max-w-md lg:max-w-none group">
               {/* Main Luxury Frame Image */}
-              <div className="relative aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl border-2 border-[#C5A059]/30">
+              <div className="relative aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl border-2 border-[#C5A059]/40 bg-stone-100 dark:bg-[#3A2E2B] ring-1 ring-[#C5A059]/20 shadow-[#C5A059]/10">
                 <img
-                  src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1000&q=80"
-                  alt="Dua Modas Look Exclusivo"
-                  className="w-full h-full object-cover object-center"
+                  src="https://i.imgur.com/SkpMWC8.jpeg"
+                  alt="Dua Modas - Loja Física São Roque"
+                  referrerPolicy="no-referrer"
+                  className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#2C221E]/60 via-transparent to-transparent" />
-                <div className="absolute bottom-6 left-6 right-6 text-white">
-                  <span className="px-2.5 py-1 bg-[#C5A059] text-[10px] font-bold uppercase rounded-full">
-                    Destaque da Semana
-                  </span>
-                  <p className="font-serif-luxury text-xl font-bold mt-1">Conjunto Alfaiataria Linho Sálvia</p>
+                <div className="absolute inset-0 bg-gradient-to-t from-[#2C221E]/85 via-[#2C221E]/25 to-transparent opacity-90 transition-opacity group-hover:opacity-95" />
+                
+                <div className="absolute bottom-6 left-6 right-6 text-white space-y-1.5">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#8B9E87] text-white text-[10px] font-bold uppercase tracking-wider rounded-full shadow-md backdrop-blur-xs">
+                    <MapPin className="w-3 h-3" />
+                    <span>Loja Física São Roque / SP</span>
+                  </div>
+                  <p className="font-serif-luxury text-xl font-bold leading-tight drop-shadow-xs">
+                    DUA - Moda que Conecta
+                  </p>
+                  <p className="text-xs text-stone-200 font-light drop-shadow-xs">
+                    Rua Rui Barbosa, 110 • Moda Adulto, Infantil & Juvenil
+                  </p>
                 </div>
               </div>
 
               {/* Floating Small Badge Card */}
-              <div className="absolute -bottom-6 -left-6 bg-white dark:bg-[#3A2E2B] p-4 rounded-2xl border border-[#C5A059]/30 shadow-xl hidden sm:flex items-center gap-3 max-w-xs animate-bounce-slow">
+              <div className="absolute -bottom-6 -left-6 bg-white/95 dark:bg-[#3A2E2B]/95 backdrop-blur-md p-4 rounded-2xl border border-[#C5A059]/30 shadow-2xl hidden sm:flex items-center gap-3 max-w-xs transition-transform hover:scale-105">
                 <div className="w-10 h-10 rounded-full bg-[#B87D7B]/20 text-[#B87D7B] flex items-center justify-center font-serif-luxury font-bold text-lg">
                   15%
                 </div>
                 <div className="text-xs">
                   <p className="font-bold text-[#2C221E] dark:text-[#F8F5F2]">Cupom BEMVINDA15</p>
-                  <p className="text-stone-400">Na sua primeira compra no site</p>
+                  <p className="text-stone-500 dark:text-stone-400">Na primeira compra no site</p>
                 </div>
               </div>
             </div>

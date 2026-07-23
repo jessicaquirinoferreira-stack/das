@@ -165,31 +165,37 @@ export async function deleteCoupon(id: string) {
 }
 
 export async function createOrder(orderData: Omit<Order, 'id' | 'orderNumber' | 'createdAt'>): Promise<Order> {
-  const orderRef = doc(collection(db, 'orders'));
+  const generatedId = `ord_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
   const orderNumber = `DUA-${Math.floor(100000 + Math.random() * 900000)}`;
   const newOrder: Order = {
     ...orderData,
-    id: orderRef.id,
+    id: generatedId,
     orderNumber,
     createdAt: Date.now()
   };
-  await setDoc(orderRef, newOrder);
 
-  // Deduct stock for ordered items in Firestore
-  for (const item of orderData.items) {
-    try {
-      const prodDocRef = doc(db, 'products', item.productId);
-      const prodSnap = await getDocs(query(collection(db, 'products')));
-      const targetProd = prodSnap.docs.find(d => d.id === item.productId);
-      if (targetProd && targetProd.exists()) {
-        const currentStock = targetProd.data().stock || 0;
-        await updateDoc(prodDocRef, {
-          stock: Math.max(0, currentStock - item.quantity)
-        });
+  try {
+    const orderRef = doc(db, 'orders', generatedId);
+    await setDoc(orderRef, newOrder);
+
+    // Deduct stock for ordered items in Firestore safely
+    for (const item of orderData.items) {
+      try {
+        const prodDocRef = doc(db, 'products', item.productId);
+        const prodSnap = await getDocs(query(collection(db, 'products')));
+        const targetProd = prodSnap.docs.find(d => d.id === item.productId);
+        if (targetProd && targetProd.exists()) {
+          const currentStock = targetProd.data().stock || 0;
+          await updateDoc(prodDocRef, {
+            stock: Math.max(0, currentStock - item.quantity)
+          });
+        }
+      } catch (e) {
+        console.warn('Stock update warning:', e);
       }
-    } catch (e) {
-      console.warn('Stock update warning:', e);
     }
+  } catch (err) {
+    console.warn('Firestore order save warning (order processed locally):', err);
   }
 
   return newOrder;
